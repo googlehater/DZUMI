@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Query
+from fastapi import FastAPI, HTTPException, Depends, Query, Path
 from pydantic import BaseModel
 from services.orders_service import OrderService
 from dependencies import get_order_service
@@ -37,8 +37,9 @@ class OrderChangeStatusDto(BaseModel):
 
 
 @app.post('/api/v1/orders/order') # декоратор, обработчик пост запросов, в скобках потом эндпоинт юрлку вставим 
-async def create_order(orders_dto: OrderCreateDto,
-                       orders_service: OrderService = Depends(get_order_service)
+async def create_order(
+    orders_dto: OrderCreateDto,
+    orders_service: OrderService = Depends(get_order_service)
 ):
     orders_service.create_new_order(orders_dto) # заявка создана
 
@@ -52,11 +53,15 @@ async def get_orders(
     '''Получить все заявки (пагинация)'''
     return await order_service.get_all_orders(skip=skip, limit=limit)
 
-@app.patch('api/v1/orders/order/{order_id}/change/status')
+# Смена статуса заявки
+@app.patch('/api/v1/orders/order/{order_id}/change/status')
 async def change_status_order(
     new_order_status: str,
     order_service: OrderService,
-    order_status_dto: OrderChangeStatusDto
-):
+    order_status_dto: OrderChangeStatusDto,
+    order_id: int = Path(..., title='ID заявки'),
+    
+): 
     '''Поменять статус на новый'''
-    return order_service.transit_order_status(order_status_dto, new_status=new_order_status)
+    return await order_service.transit_order_status(order_status_dto, new_status=new_order_status)
+
