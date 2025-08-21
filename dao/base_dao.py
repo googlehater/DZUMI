@@ -23,9 +23,9 @@ class BaseDAO:
         result = self.session.execute(query)
 
         return result.scalars().all()
-        # return self.session.query(self.model).all()
 
     def get_by_id(self, id: int):
+        '''Возвращает экземпляр класса'''
         return self.session.get(self.model, id)
 
     def update(self, id: int, **data):

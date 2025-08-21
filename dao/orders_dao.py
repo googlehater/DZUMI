@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from models.order import Order
 from .base_dao import BaseDAO
-from sqlalchemy import select
+from sqlalchemy import select, update
 from typing import List, Optional
 
 
@@ -23,18 +23,27 @@ class OrderDAO(BaseDAO):
     def get_by_date(self, date):
         pass
 
-    # def get_all(self, skip: int, limit: int):  # пагинация
-    #     query = select(Order).offset(skip).limit(limit)
-    #     result = self.ession.execute(query)
-    #     return result.scalars().all()
+    async def get_all_orders(self, skip: int, limit: int):  
+        '''Пагинация'''
+        return await self.order_dao.get_all(skip=skip, limit=limit)
+  
 
     def save(self, request):
-        pass
+        self.session.add(request)
+        self.session.commit()
+        return request
 
-    def update_status(self, request, new_status):
+    def update_status(self, order_id, new_status):
         '''Меняем статус через модель'''
-        request.change_status(new_status)  # change_status - вызываем у модели Order
-        self.save(request)
+        order
+
+        if not Order.order_status.can_transition(new_status):
+            raise ValueError("Невозможно перевести заявку в статус {new_status}")
+        
+
+        order = self.session.get(Order, order_id)
+        order.change_status(new_status)
+        self.save(order)
 
     def get_by_user(self, user: int) -> List[Order]:
         '''Получение заявок по пользователю'''
@@ -49,4 +58,9 @@ class OrderDAO(BaseDAO):
         result = self.session.execute(query)
 
         return result.scalars().first()
+    
+    async def get_all_orders(self, skip: int, limit: int):  
+        '''Пагинация'''
+        return await self.order_dao.get_all(skip=skip, limit=limit)
+  
     

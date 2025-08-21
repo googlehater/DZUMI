@@ -44,7 +44,7 @@ def manage_orders():
 
         choice = input("Выберите: ")
         if choice == "1":
-            pass
+            change_status()
         elif choice == "2":
             pass
         elif choice == "3":
@@ -60,9 +60,13 @@ def manage_orders():
 
 
 def change_status():
-    
+    from dao.orders_dao import OrderDAO
+    from models.order import Order
 
-        pass
+
+    order_dao = OrderDAO(session)
+    order = order_dao.get_by_id(order_id=1)
+    print(order.order_status)
 
 
 def pay_order():

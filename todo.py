@@ -28,3 +28,9 @@
 #     orderDao = @Inject<OrdersDao>()
 #     model = orderDao.createModelBy(orderDto, user)
 #     orderDao.save(model)
+
+from dao.orders_dao import OrderDAO
+from models.order import Order
+order_dao = OrderDAO
+order = order_dao.get_by_id(order_id=1)
+print(order.order_status)

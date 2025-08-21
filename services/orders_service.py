@@ -1,8 +1,9 @@
 from fastapi import Depends
-from rest.orders_controller import OrderCreateDto
+from rest.orders_controller import OrderCreateDto, OrderChangeStatusDto
 from dao.orders_dao import OrderDAO
 from dao.users_dao import UserDAO
 import dependencies
+from models.order import OrderStatusEnum, Order
 
 class OrderService:
     def __init__(self, order_dao: OrderDAO, user_dao: UserDAO):
@@ -19,13 +20,27 @@ class OrderService:
         new_order = await self.order_dao.create(order_data)
 
         return new_order
-
-    async def get_all_orders(self, skip: int, limit: int):  
-        '''Пагинация'''
-        return await self.order_dao.get_all(skip=skip, limit=limit)
-    
-    async def accept_order(self, ):
-        pass
-
-    async def decline_order(self, ):
-        pass
+  
+    async def transit_order_status(self, order_dto: OrderChangeStatusDto, new_status: str):
+        '''Переводит заявку в новый статус'''
+        try:
+            status_enum = OrderStatusEnum(new_status)
+        except: 
+            raise ValueError(f"Неизвестный статус: {new_status}")
+        
+        user = await self.user_dao.get_by_id(order_dto.user_id)
+        if not user: 
+            raise ValueError("Пользователь не найден")
+        
+        order = await self.order_dao.get_by_id(order_dto.order_id)
+        if not order:
+            raise ValueError("Заяка не найдена")
+        
+        
+        current_status_enum = OrderStatusEnum(order.order_status)
+        
+        if not current_status_enum.can_transition(status_enum):
+            raise ValueError(f"Невозможно перевести заявку в статус {new_status}")
+        
+        
+        await self.order_dao.update_status(order.id, status_enum)

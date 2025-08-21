@@ -30,21 +30,33 @@ class OrderResponceDto(BaseModel):  # дто для ответа
     comment: str
     decline_reason: str
 
+class OrderChangeStatusDto(BaseModel):
+    user_id: int
+    order_id: int
+    new_order_status: str
 
-@app.post('') # декоратор, обработчик пост запросов, в скобках потом эндпоинт юрлку вставим 
+
+@app.post('/api/v1/orders/order') # декоратор, обработчик пост запросов, в скобках потом эндпоинт юрлку вставим 
 async def create_order(orders_dto: OrderCreateDto,
                        orders_service: OrderService = Depends(get_order_service)
 ):
     orders_service.create_new_order(orders_dto) # заявка создана
 
 # Эндпоинт с пагинацией
-@app.get("/orders", response_model=List[OrderResponceDto])
+@app.get("/api/v1/orders", response_model=List[OrderResponceDto])
 async def get_orders(
     skip: int = Query(0, ge=0, description="Сколько записей пропустить"),
     limit: int = Query(10, le=100, description="Лимит записей на страницу"),
     order_service: OrderService = Depends(get_order_service)
 ):
+    '''Получить все заявки (пагинация)'''
     return await order_service.get_all_orders(skip=skip, limit=limit)
 
-# тут дописать функции
-# редактировать еще чет придумать
+@app.patch('api/v1/orders/order/{order_id}/change/status')
+async def change_status_order(
+    new_order_status: str,
+    order_service: OrderService,
+    order_status_dto: OrderChangeStatusDto
+):
+    '''Поменять статус на новый'''
+    return order_service.transit_order_status(order_status_dto, new_status=new_order_status)
