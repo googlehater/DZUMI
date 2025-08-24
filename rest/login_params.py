@@ -36,7 +36,7 @@ async def login(login_req: LoginRequestDto):
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")
     access_token = create_access_token(
-        data={"sub": user["username"]}
+        data={"sub": user["username"]},
         expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         )
     return {"access_token": access_token, "token_type": "bearer"}
