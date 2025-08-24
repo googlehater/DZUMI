@@ -21,6 +21,8 @@ class User(Base):
     phone_number: Mapped[str] = mapped_column(String(20))
     role_id: Mapped[str] = mapped_column(ForeignKey("roles.id", ondelete="CASCADE"))
     is_active: Mapped[bool] = mapped_column(Boolean)
+    username: Mapped[str] = mapped_column(String, nullable=False)
+    hash_password: Mapped[str] = mapped_column(String(255), nullable=False)
 
     # связи
     role: Mapped[list["Role"]] = relationship(back_populates="users")

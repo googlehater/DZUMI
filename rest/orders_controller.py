@@ -8,7 +8,8 @@ app = FastAPI()
 
 # дто может быть ДОХУЯ
 
-class OrderCreateDto(BaseModel): # описывает какие данные ожидаются в теле запроса
+# описывает какие данные ожидаются в теле запроса
+class OrderCreateDto(BaseModel): 
     user_id: int
     object_id: int
     system_type_id: int
@@ -17,7 +18,8 @@ class OrderCreateDto(BaseModel): # описывает какие данные о
     decline_reason: Optional[str] = None
 
 
-class OrderResponceDto(BaseModel):  # дто для ответа
+# дто для ответа
+class OrderResponceDto(BaseModel):
     id: int
     object_id: int
     user_id: int  # мб поменять на ФИО
@@ -30,13 +32,15 @@ class OrderResponceDto(BaseModel):  # дто для ответа
     comment: str
     decline_reason: str
 
+# дто для изменения статуса заявки
 class OrderChangeStatusDto(BaseModel):
     user_id: int
     order_id: int
     new_order_status: str
 
 
-@app.post('/api/v1/orders/order') # декоратор, обработчик пост запросов, в скобках потом эндпоинт юрлку вставим 
+# Создать заявку
+@app.post('/api/v-1/orders/order') 
 async def create_order(
     orders_dto: OrderCreateDto,
     orders_service: OrderService = Depends(get_order_service)
@@ -59,9 +63,24 @@ async def change_status_order(
     new_order_status: str,
     order_service: OrderService,
     order_status_dto: OrderChangeStatusDto,
-    order_id: int = Path(..., title='ID заявки'),
-    
+    order_id: int = Path(..., title='ID заявки'),    
 ): 
     '''Поменять статус на новый'''
     return await order_service.transit_order_status(order_status_dto, new_status=new_order_status)
+
+# Редактировать заявку
+@app.patch('/api/v1/orders/{order_id}/change')
+async def edit_order(
+        order_id: int = Path(..., title='ID заявки'),
+):
+    pass
+
+# похоже нахуй убирать это говно
+# Работы для новой 
+@app.post('/api/v1/items/{order_id}')
+async def add_items(
+
+):
+    pass
+
 
