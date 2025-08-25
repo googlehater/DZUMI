@@ -23,7 +23,7 @@ class ChangePhoneNumberDto(BaseModel):
 class ChangeRoleDto(BaseModel):
     new_role = [str]
 
-@app.get('')
+@app.get('/')
 async def create_new_user(user_dto: UserDto,
                           user_service: UserService = Depends(get_user_service)
 ):
