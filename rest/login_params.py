@@ -84,6 +84,7 @@ def create_access_token(data: dict, expires_delta: timedelta):
 # Авторизация
 @app.post('/api/v1/login')
 async def login(login_req: LoginRequestDto):
+    ''''''
     user = authenticate_user(login_req.username, login_req.password)
     if not user:
         raise HTTPException(status_code=401, detail="Invalid username or password")

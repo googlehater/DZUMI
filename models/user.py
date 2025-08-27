@@ -7,6 +7,7 @@ from .base import Base
 if TYPE_CHECKING:
     from .role import Role
     from .order import Order
+    from .sessions import DBSession
 
 
 class User(Base):
@@ -27,6 +28,7 @@ class User(Base):
     # связи
     role: Mapped[list["Role"]] = relationship(back_populates="users")
     orders: Mapped[list["Order"]] = relationship(back_populates="user")
+    sessions: Mapped[list["DBSession"]] = relationship(back_populates="user")
 
     
     

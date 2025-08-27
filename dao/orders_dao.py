@@ -10,22 +10,23 @@ class OrderDAO(BaseDAO):
         super().__init__(session, Order)
 
     def get_by_priority(self, priority):
-        return self.session.query(Order).filter(Order.priority == priority).all() # self.session.query(Order)
-                                                                                  # self.session - это сессия SQLAlchemy, подключение к БД
-                                                                                  # .query(Order) - создаёт новый запрос (Query object) для модели Order
-                                                                                  # .filter(Order.priority == priority)
-                                                                                  # Order.priority - ссылается на столбец priority в таблице orders
-                                                                                  # == priority - сравнение с переданным значением
-                                                                                  # .all() Выполняет собранный запрос в БД, Возвращает все строки результата как список объектов Order
-                                                                                  # Если нет результатов - вернёт пустой список
-                                                                                  # Это типо базовая конструкция стоит на заметку взять
+        return self.session.query(Order).filter(Order.priority == priority).all() 
+        # self.session.query(Order)
+        # self.session - это сессия SQLAlchemy, подключение к БД
+        # .query(Order) - создаёт новый запрос (Query object) для модели Order
+        # .filter(Order.priority == priority)
+        # Order.priority - ссылается на столбец priority в таблице orders
+        # == priority - сравнение с переданным значением
+        # .all() Выполняет собранный запрос в БД, Возвращает все строки результата как список объектов Order
+        # Если нет результатов - вернёт пустой список
+        # Это типо базовая конструкция стоит на заметку взять
 
     def get_by_date(self, date):
         pass
 
     async def get_all_orders(self, skip: int, limit: int):  
         '''Пагинация'''
-        return await self.order_dao.get_all(skip=skip, limit=limit)
+        return await self.get_all(skip=skip, limit=limit)
   
 
     def save(self, request):
