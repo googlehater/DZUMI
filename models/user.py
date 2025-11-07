@@ -1,13 +1,13 @@
 from sqlalchemy import String, ForeignKey, Text, Integer, Boolean, Numeric
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from .base import Base
 
 if TYPE_CHECKING:
     from .role import Role
     from .order import Order
-    from .sessions import DBSession
+    # from .sessions import DBSession
 
 
 class User(Base):
@@ -28,7 +28,7 @@ class User(Base):
     # связи
     role: Mapped[list["Role"]] = relationship(back_populates="users")
     orders: Mapped[list["Order"]] = relationship(back_populates="user")
-    sessions: Mapped[list["DBSession"]] = relationship(back_populates="user")
+    sessions: Mapped[List["DBSession"]] = relationship("DBSession", back_populates="user")
 
     
     

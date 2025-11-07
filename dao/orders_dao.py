@@ -41,10 +41,11 @@ class OrderDAO(BaseDAO):
         if not Order.order_status.can_transition(new_status):
             raise ValueError("Невозможно перевести заявку в статус {new_status}")
         
-
         order = self.session.get(Order, order_id)
         order.change_status(new_status)
         self.save(order)
+
+        return None
 
     def get_by_user(self, user: int) -> List[Order]:
         '''Получение заявок по пользователю'''
@@ -60,7 +61,7 @@ class OrderDAO(BaseDAO):
 
         return result.scalars().first()
     
-    async def get_all_orders(self, skip: int, limit: int):  
+    def get_all_orders(self, skip: int, limit: int):  
         '''Пагинация'''
-        return await self.order_dao.get_all(skip=skip, limit=limit)
+        return self.get_all(skip=skip, limit=limit)
  

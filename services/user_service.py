@@ -1,5 +1,5 @@
-from fastapi import Depends
-from rest.user_controller import UserDto, ChangeFirstNameDto,ChangeRoleDto
+from fastapi import Depends, HTTPException, status
+from dto.user_dto import UserDto, ChangeFirstNameDto,ChangeRoleDto
 from dao.users_dao import UserDAO
 import dependencies
 
@@ -23,6 +23,12 @@ class UserService:
         new_email = user_dao.update(user_dto.email)
         return new_email
     
-    async def change_role(change_role_dto: ChangeRoleDto, user_dao: UserDAO): # тут поправть условие на то как макс говорил
-        if  != "Начальник":
-            raise ValueError("Недостаточно прав")
+    async def change_role(change_role_dto: ChangeRoleDto, user_dao: UserDAO, current_user_id: int): # тут поправть условие на то как макс говорил
+        
+        current_user = user_dao.get_by_id(current_user_id)
+
+
+        
+        if current_user.role_id != "Начальник":  # != "Начальник" - хз какой id дать начальнику!
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="Недостаточно прав для изменения ролей")

@@ -1,4 +1,5 @@
 from fastapi import Depends
+from sqlalchemy.orm import Session
 
 from services.orders_service import OrderService
 from services.documents_service import DocumentService
@@ -12,14 +13,16 @@ from dao.documet_attributes_dao import DocumentAttributeDAO
 from dao.items_dao import ItemDAO
 from dao.order_items_dao import OrderItemDAO
 
+from database import get_db
+
 # тут мы пишем функции для Depends чтобы не явно/не строго передавать зависимости
 # упрощает тесты
 
-def get_order_dao():
-    return OrderDAO()
+def get_order_dao(db: Session = Depends(get_db)):
+    return OrderDAO(session=db)
 
-def get_user_dao():
-    return UserDAO()
+def get_user_dao(db: Session = Depends(get_db)):
+    return UserDAO(session = db)
 
 def get_document_dao():
     return DocumentDAO

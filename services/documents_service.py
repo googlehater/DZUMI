@@ -1,5 +1,5 @@
 from fastapi import Depends
-from rest.documents_controller import DocumentDTO
+from dto.document_dto import DocumentDTO
 from dao.documents_dao import DocumentDAO
 from dao.documet_attributes_dao import DocumentAttributeDAO
 from dao.users_dao import UserDAO

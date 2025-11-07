@@ -1,23 +1,23 @@
-from fastapi import Depends
-from rest.orders_controller import OrderCreateDto, OrderChangeStatusDto
+from fastapi import Depends, HTTPException
+from dto.order_dto import OrderCreateDto, OrderChangeStatusDto
 from dao.orders_dao import OrderDAO
 from dao.users_dao import UserDAO
-import dependencies
-from models.order import OrderStatusEnum, Order
+# import dependencies
+from models.order import OrderStatusEnum  #, Order
 
 class OrderService:
     def __init__(self, order_dao: OrderDAO, user_dao: UserDAO):
         self.order_dao = order_dao
         self.user_dao = user_dao
     
-    async def create_new_order(self, order_dto: OrderCreateDto):
+    def create_new_order(self, order_dto: OrderCreateDto):
         '''Создает заявку с проверкой пользователя'''
-        user = await self.user_dao.get_by_id(order_dto.user_id)
+        user = self.user_dao.get_by_id(order_dto.user_id)
         if not user:
             raise ValueError("Пользователь не найден")
         
         order_data = order_dto.model_dump()
-        new_order = await self.order_dao.create(order_data)
+        new_order = self.order_dao.create(**order_data)
 
         return new_order
   
@@ -30,7 +30,7 @@ class OrderService:
         
         user = await self.user_dao.get_by_id(order_dto.user_id)
         if not user: 
-            raise ValueError("Пользователь не найден")
+            raise HTTPException(status_code=404, detail="Пользователь не найден")
         
         order = await self.order_dao.get_by_id(order_dto.order_id)
         if not order:
@@ -44,3 +44,9 @@ class OrderService:
         
         
         await self.order_dao.update_status(order.id, status_enum)
+        return None
+
+    async def get_all_orders(self, skip: int, limit: int):
+        '''Пагинация'''
+        order_list = self.order_dao.get_all_orders(skip=skip, limit=limit)
+        return order_list

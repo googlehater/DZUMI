@@ -1,9 +1,9 @@
 from fastapi import Depends
-from rest.items_controller import ItemDto
+from dto.item_dto import ItemDto
 from dao.items_dao import ItemDAO
 from dao.order_items_dao import OrderItemDAO
 from dao.users_dao import UserDAO
-import dependencies
+
 
 class ItemService:
     def __init__(self, item_dao: ItemDAO, order_item_dao: OrderItemDAO, user_dao: UserDAO):

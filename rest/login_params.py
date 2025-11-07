@@ -13,12 +13,9 @@ load_dotenv()
 
 session_storage = {}
 
-app = FastAPI()
+# app = FastAPI()
 
-auth_router = APIRouter(
-    prefix='/auth',
-    tags=['auth']
-)
+router = APIRouter(prefix='/api/v1/auth', tags=['auth'])
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = "HS256"
@@ -51,7 +48,7 @@ class Session(BaseModel):
     created_at: datetime
     expires_at: datetime
 
-
+# @router.post('/create_session/{user_id}')
 def create_session(user_id: str) -> str:
     session_id = str(uuid.uuid4())
     session_storage[session_id] = {
@@ -61,6 +58,7 @@ def create_session(user_id: str) -> str:
     }
     return session_id
 
+# @router.get('/get_session')
 def get_session(session_id: str):
     '''Получает сессию по ID'''
     return session_storage.get(session_id)
@@ -81,16 +79,5 @@ def create_access_token(data: dict, expires_delta: timedelta):
     
     pass
 
-# Авторизация
-@app.post('/api/v1/login')
-async def login(login_req: LoginRequestDto):
-    ''''''
-    user = authenticate_user(login_req.username, login_req.password)
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid username or password")
-    access_token = create_access_token(
-        data={"sub": user["username"]},
-        expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-        )
-    return {"access_token": access_token, "token_type": "bearer"}
+
 

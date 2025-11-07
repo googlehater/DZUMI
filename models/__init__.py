@@ -8,6 +8,7 @@ from models.order import Order
 from models.role import Role
 from models.trusted_supplier import TrustedSupplier
 from models.user import User
+from models.sessions import DBSession
 
 __all__ = [
     "Base",
@@ -20,4 +21,5 @@ __all__ = [
     "Role",
     "TrustedSupplier",
     "User",
+    "DBSession",
 ]
